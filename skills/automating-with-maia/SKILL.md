@@ -268,13 +268,113 @@ Workflow 3 - Order Processing:
 Deploy each workflow and provide me with all 3 webhook URLs.
 ```
 
+## Webhook Connection Protocol
+
+Maia webhooks behave differently depending on whether the workflow is configured to return a response. The webhook URL format is:
+
+```
+https://hooks.modularmind.app/hooks/<hook-id>
+```
+
+### Fire-and-Forget (No Response)
+
+When the workflow has no response configured, the webhook is a standard HTTP POST that returns immediately:
+
+```
+POST https://hooks.modularmind.app/hooks/<hook-id>
+Content-Type: application/json
+
+{ ...payload }
+```
+
+Response:
+```json
+{ "type": "success", "message": "Workflow execution triggered successfully." }
+```
+
+### Streaming Response (SSE)
+
+When the workflow is configured to return a response, the webhook uses **Server-Sent Events (SSE)** to stream the result back. The connection stays open with periodic heartbeats while the workflow executes, then delivers the result as an SSE event.
+
+**The agent MUST use an SSE-compatible client** (e.g., `EventSource` or manual `fetch` with stream reading) — not a standard `fetch` expecting a JSON body.
+
+**SSE event types:**
+
+| Event | Data | Description |
+|-------|------|-------------|
+| `: heartbeat` | *(comment, no data)* | Sent every ~15s to keep connection alive |
+| `response` | `{ status, contentType, body, encoding? }` | The workflow result |
+| `done` | `{}` | Signals the stream is complete |
+| `error` | `{ type, message }` | Workflow execution failed |
+
+**Response event payload:**
+- `status` — HTTP status code (e.g., `200`)
+- `contentType` — MIME type of the body (e.g., `application/json`)
+- `body` — The response content as a string. For text/JSON responses this is the raw UTF-8 string. For binary responses this is base64-encoded.
+- `encoding` — Only present for binary responses, set to `"base64"`
+
+**Example frontend integration (JavaScript):**
+
+```javascript
+const eventSource = new EventSource('https://hooks.modularmind.app/hooks/<hook-id>');
+
+eventSource.addEventListener('response', (event) => {
+  const payload = JSON.parse(event.data);
+  // payload.body contains the workflow result
+  // For JSON responses: JSON.parse(payload.body)
+  const result = JSON.parse(payload.body);
+  handleResult(result);
+});
+
+eventSource.addEventListener('done', () => {
+  eventSource.close();
+});
+
+eventSource.addEventListener('error', (event) => {
+  try {
+    const error = JSON.parse(event.data);
+    handleError(error.message);
+  } catch {
+    handleError('Connection lost');
+  }
+  eventSource.close();
+});
+```
+
+> **Note**: `EventSource` only supports GET requests. If you need to POST a payload to the webhook (which is the common case), use `fetch` with `getReader()` on the response stream and parse SSE events manually, or use an SSE library that supports POST (e.g., `@microsoft/fetch-event-source`).
+
+**Example with POST payload:**
+
+```javascript
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+
+await fetchEventSource('https://hooks.modularmind.app/hooks/<hook-id>', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ /* your input payload */ }),
+  onmessage(event) {
+    if (event.event === 'response') {
+      const payload = JSON.parse(event.data);
+      const result = JSON.parse(payload.body);
+      handleResult(result);
+    }
+    if (event.event === 'done') {
+      // Stream complete
+    }
+  },
+  onerror(err) {
+    handleError(err);
+  }
+});
+```
+
 ## Important Notes
 
 - **User approves deployments**: Maia suggests deployments but users must manually approve
 - **Manual browser control**: Users can control Maia's browser to sign into platforms
 - **Flexible input parsing**: Webhooks accept ANY JSON structure - no strict schema required
 - **Visual workflow editing**: Users can edit the workflow graph and fill placeholders before deployment
-- **Webhook timeout considerations**: Deployed workflows may take significant time to execute (up to an hour for complex flows). When integrating webhooks into websites or apps, avoid using default API gateway timeouts (e.g., 30 seconds). Since webhook calls are synchronous, configure your HTTP client to wait for the full response. If long wait times create poor user experience, consider instructing the user to ask Maia for an asynchronous flow pattern instead—where the webhook immediately acknowledges receipt and sends results via a callback URL or stores them for later retrieval.
+- **Webhook timeout considerations**: Deployed workflows may take significant time to execute (up to an hour for complex flows). The SSE streaming protocol keeps the connection alive with heartbeats, but the agent should still present appropriate loading/progress UI to the user while waiting for the `response` event. If long wait times create poor user experience, consider instructing the user to ask Maia for an asynchronous flow pattern instead—where the webhook immediately acknowledges receipt and sends results via a callback URL or stores them for later retrieval.
 
 ## Response Payload Specification
 
