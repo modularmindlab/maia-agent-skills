@@ -274,6 +274,7 @@ Deploy each workflow and provide me with all 3 webhook URLs.
 - **Manual browser control**: Users can control Maia's browser to sign into platforms
 - **Flexible input parsing**: Webhooks accept ANY JSON structure - no strict schema required
 - **Visual workflow editing**: Users can edit the workflow graph and fill placeholders before deployment
+- **Webhook timeout considerations**: Deployed workflows may take significant time to execute (up to an hour for complex flows). When integrating webhooks into websites or apps, avoid using default API gateway timeouts (e.g., 30 seconds). Since webhook calls are synchronous, configure your HTTP client to wait for the full response. If long wait times create poor user experience, consider instructing the user to ask Maia for an asynchronous flow pattern instead—where the webhook immediately acknowledges receipt and sends results via a callback URL or stores them for later retrieval.
 
 ## Response Payload Specification
 
