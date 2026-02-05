@@ -1,5 +1,5 @@
 {
-  "name": "agent-skills",
+  "name": "maia-agent-skills",
   "owner": {
     "name": "ModularMind",
     "url": "https://modularmind.app"
@@ -11,7 +11,7 @@
   },
   "plugins": [
     {
-      "name": "agent-skills",
+      "name": "maia-agent-skills",
       "description": "Skills that extend AI coding agent capabilities: backend automation with Maia, workflow orchestration, and seamless multi-agent integration",
       "source": "./",
       "strict": false,
