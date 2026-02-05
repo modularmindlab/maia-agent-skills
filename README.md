@@ -1,4 +1,4 @@
-# Agent Skills
+# Maia Agent Skills
 
 A collection of skills for AI coding agents. Skills are packaged instructions and scripts that extend agent capabilities.
 
@@ -44,13 +44,13 @@ Use [npx skills](https://github.com/vercel-labs/skills) to install skills direct
 
 ```bash
 # Install all skills
-npx skills add modularmindlab/agent-skills
+npx skills add modularmindlab/maia-agent-skills
 
 # Install specific skills
-npx skills add modularmindlab/agent-skills --skill automating-with-maia
+npx skills add modularmindlab/maia-agent-skills --skill automating-with-maia
 
 # List available skills
-npx skills add modularmindlab/agent-skills --list
+npx skills add modularmindlab/maia-agent-skills --list
 ```
 
 This automatically installs to your `.claude/skills/` directory.
@@ -61,10 +61,10 @@ Install via Claude Code's built-in plugin system:
 
 ```bash
 # Add the marketplace
-/plugin marketplace add modularmindlab/agent-skills
+/plugin marketplace add modularmindlab/maia-agent-skills
 
 # Install all skills
-/plugin install agent-skills
+/plugin install maia-agent-skills
 ```
 
 ### Option 3: Clone and Copy
@@ -72,8 +72,8 @@ Install via Claude Code's built-in plugin system:
 Clone the entire repo and copy the skills folder:
 
 ```bash
-git clone https://github.com/modularmindlab/agent-skills.git
-cp -r agent-skills/skills/* .claude/skills/
+git clone https://github.com/modularmindlab/maia-agent-skills.git
+cp -r maia-agent-skills/skills/* .claude/skills/
 ```
 
 ### Option 4: Git Submodule
@@ -81,10 +81,10 @@ cp -r agent-skills/skills/* .claude/skills/
 Add as a submodule for easy updates:
 
 ```bash
-git submodule add https://github.com/modularmindlab/agent-skills.git .claude/agent-skills
+git submodule add https://github.com/modularmindlab/maia-agent-skills.git .claude/maia-agent-skills
 ```
 
-Then reference skills from `.claude/agent-skills/skills/`.
+Then reference skills from `.claude/maia-agent-skills/skills/`.
 
 ### Option 5: Fork and Customize
 
@@ -98,13 +98,13 @@ Use [SkillKit](https://github.com/rohitg00/skillkit) to install skills across mu
 
 ```bash
 # Install all skills
-npx skillkit install modularmindlab/agent-skills
+npx skillkit install modularmindlab/maia-agent-skills
 
 # Install specific skills
-npx skillkit install modularmindlab/agent-skills --skill automating-with-maia
+npx skillkit install modularmindlab/maia-agent-skills --skill automating-with-maia
 
 # List available skills
-npx skillkit install modularmindlab/agent-skills --list
+npx skillkit install modularmindlab/maia-agent-skills --list
 ```
 
 ## Usage
