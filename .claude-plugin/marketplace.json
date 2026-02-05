@@ -1,0 +1,23 @@
+{
+  "name": "agent-skills",
+  "owner": {
+    "name": "ModularMind",
+    "url": "https://modularmind.app"
+  },
+  "metadata": {
+    "description": "Skills for AI coding agents to work with Maia — backend automation, workflow orchestration, and multi-agent integration",
+    "version": "1.0.0",
+    "repository": "https://github.com/modularmindlab/agent-skills"
+  },
+  "plugins": [
+    {
+      "name": "agent-skills",
+      "description": "Skills that extend AI coding agent capabilities: backend automation with Maia, workflow orchestration, and seamless multi-agent integration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/automating-with-maia"
+      ]
+    }
+  ]
+}
