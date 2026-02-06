@@ -127,7 +127,8 @@ Then:
 
 ### Step 4: Embed Webhook
 
-Once you have the URL, integrate it into the website/app:
+Once you have the URL, integrate it directly into the website/app code:
+- **Hardcode the webhook URL** in the source code (e.g., as a constant or in an environment/config variable). Do NOT create a UI input field for users to paste the webhook URL — embed it directly so the integration works out of the box.
 - Call the webhook when user triggers the action
 - Handle the response payload as specified
 
@@ -370,10 +371,12 @@ await fetchEventSource('https://hooks.modularmind.app/hooks/<hook-id>', {
 
 ## Important Notes
 
+- **Embed webhook URLs in code, not in UI**: When integrating webhook URLs, always hardcode them directly in the application source code (as constants, config values, or environment variables). Never create a user-facing input field or settings panel for pasting webhook URLs — the integration should be seamless and require no manual URL entry by end users.
 - **User approves deployments**: Maia suggests deployments but users must manually approve
 - **Manual browser control**: Users can control Maia's browser to sign into platforms
 - **Flexible input parsing**: Webhooks accept ANY JSON structure - no strict schema required
 - **Visual workflow editing**: Users can edit the workflow graph and fill placeholders before deployment
+- **Prefer in-house database persistence**: Keep data in the app's own database rather than relying on Maia for storage. When possible, use serverless functions (or equivalent) to call Maia webhooks and write the response back to the database—this decouples automations from the browser session. Maia can also write directly to the app's database, but only if the prompt includes the full HTTP request details: endpoint URL, request method, headers (including auth), path/query parameters, and body structure.
 - **Webhook timeout considerations**: Deployed workflows may take significant time to execute (up to an hour for complex flows). The SSE streaming protocol keeps the connection alive with heartbeats, but the agent should still present appropriate loading/progress UI to the user while waiting for the `response` event. If long wait times create poor user experience, consider instructing the user to ask Maia for an asynchronous flow pattern instead—where the webhook immediately acknowledges receipt and sends results via a callback URL or stores them for later retrieval.
 
 ## Response Payload Specification
